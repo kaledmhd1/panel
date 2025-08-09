@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعدادات الـ API - لوحة تحكم بوت Free Fire</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* تنسيقات مشتركة مع panel.html */
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --text: #334155;
+            --border: #e2e8f0;
+        }
+        
+        .dark-mode {
+            --light: #1e293b;
+            --dark: #f8fafc;
+            --text: #cbd5e1;
+            --border: #334155;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        body.dark-mode {
+            background-color: #0f172a;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--secondary), var(--dark));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .logout-btn {
+            background: linear-gradient(to right, var(--danger), #c0392b);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .sidebar {
+            width: 260px;
+            background-color: var(--light);
+            border-left: 1px solid var(--border);
+            padding: 20px 0;
+            transition: transform 0.4s ease;
+        }
+        
+        body.dark-mode .sidebar {
+            background-color: #1e293b;
+            border-left: 1px solid #334155;
+        }
+        
+        .sidebar-item {
+            padding: 14px 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 5px 10px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            color: var(--text);
+            font-weight: 500;
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
+        }
+        
+        .sidebar-item.active {
+            background: linear-gradient(to right, rgba(52, 152, 219, 0.15), transparent);
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+        
+        .sidebar-item i {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+        
+        .card {
+            background-color: var(--light);
+            border-radius: 18px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        
+        body.dark-mode .card {
+            background-color: #1e293b;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            padding: 20px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background-color: rgba(52, 152, 219, 0.08);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            background-color: var(--light);
+            color: var(--text);
+        }
+        
+        body.dark-mode input {
+            background-color: #1e293b;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.4s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #27ae60);
+            color: white;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
+        }
+        
+        .btn-back {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            color: white;
+            box-shadow: 0 5px 15px rgba(149, 165, 166, 0.3);
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(149, 165, 166, 0.4);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text);
+            font-size: 15px;
+            margin-top: 30px;
+            opacity: 0.7;
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                top: 60px;
+                bottom: 0;
+                z-index: 90;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar.active {
+                transform: translateX(260px);
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 15px;
+            }
+            
+            .card-body {
+                padding: 20px;
+            }
+            
+            th, td {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 12px 15px;
+            }
+            
+            .logo h1 {
+                font-size: 18px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
+    <script>
+        function updateApi(apiName) {
+            const apiUrl = document.getElementById(`api-url-${apiName}`).value;
+            
+            fetch('/update_api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `api_name=${apiName}&api_url=${encodeURIComponent(apiUrl)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    alert('تم تحديث الـ API بنجاح!');
+                } else {
+                    alert('حدث خطأ أثناء التحديث: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('حدث خطأ في الاتصال: ' + error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+            <h1>إعدادات الـ API - بوت Free Fire</h1>
+        </div>
+        
+        <div class="header-controls">
+            <button class="theme-toggle" onclick="toggleDarkMode()">
+                <i class="fas fa-moon"></i>
+            </button>
+            
+            <form action="/logout" method="post">
+                <button type="submit" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
+            </form>
+            
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>لوحة التحكم</span>
+            </div>
+            <div class="sidebar-item">
+                <i class="fas fa-users"></i>
+                <span>المستخدمين</span>
+            </div>
+            <div class="sidebar-item active">
+                <i class="fas fa-plug"></i>
+                <span>إعدادات الـ API</span>
+            </div>
+            <div class="sidebar-item">
+                <i class="fas fa-users-cog"></i>
+                <span>إدارة الجروبات</span>
+            </div>
+            <div class="sidebar-item">
+                <i class="fas fa-cog"></i>
+                <span>إعدادات البوت</span>
+            </div>
+            <div class="sidebar-item">
+                <i class="fas fa-code"></i>
+                <span>الأوامر</span>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-plug"></i>
+                    إعدادات واجهات برمجة التطبيقات (API)
+                </div>
+                <div class="card-body">
+                    <p>يمكنك هنا تعديل روابط الـ APIs التي يستخدمها البوت:</p>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم الـ API</th>
+                                <th>الرابط الحالي</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for api in apis %}
+                            <tr>
+                                <td>{{ api.name }}</td>
+                                <td>
+                                    <input type="text" id="api-url-{{ api.name }}" value="{{ api.url }}" style="width: 100%;">
+                                </td>
+                                <td>
+                                    <button class="btn btn-success" onclick="updateApi('{{ api.name }}')">
+                                        <i class="fas fa-save"></i> تحديث
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    <div class="action-buttons">
+                        <a href="/" class="btn btn-back">
+                            <i class="fas fa-arrow-left"></i> العودة للوحة التحكم
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <footer>
+                <p>© 2025 بوت Free Fire | تم التطوير بواسطة BLRXH4RDIXX</p>
+                <p>الإصدار 3.0 | نظام إدارة الـ APIs</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
